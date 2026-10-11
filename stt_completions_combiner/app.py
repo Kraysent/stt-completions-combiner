@@ -85,7 +85,7 @@ async def chat_completions(request: Request) -> Response:
         request.headers,
         authorization_override=_header_override(settings.completions_api_key),
     )
-    completions_headers["Content-Type"] = "application/json"
+    completions_headers["content-type"] = "application/json"
 
     url = proxy.build_upstream_url(
         settings.completions_base_url,

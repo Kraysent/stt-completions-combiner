@@ -19,6 +19,10 @@ HOP_BY_HOP_HEADERS = frozenset(
     }
 )
 
+# Uvicorn/Starlette set these themselves; forwarding them causes duplicates
+# (and mixed-case Content-Type keys crash Starlette with 400).
+RESPONSE_SKIP_HEADERS = HOP_BY_HOP_HEADERS | frozenset({"date", "server"})
+
 
 def build_upstream_url(base_url: str, path: str, query: str = "") -> str:
     url = f"{base_url.rstrip('/')}{path}"
@@ -40,19 +44,25 @@ def filter_request_headers(
         if lower == "authorization":
             continue
         if lower.startswith("x-") or lower in {"content-type", "accept", "openai-organization", "openai-project"}:
-            filtered[key] = value
+            filtered[lower] = value
 
     if authorization_override:
-        filtered["Authorization"] = authorization_override
+        filtered["authorization"] = authorization_override
     else:
         auth = headers.get("authorization")
         if auth:
-            filtered["Authorization"] = auth
+            filtered["authorization"] = auth
     return filtered
 
 
 def filter_response_headers(headers: httpx.Headers) -> dict[str, str]:
-    return {key: value for key, value in headers.items() if key.lower() not in HOP_BY_HOP_HEADERS}
+    filtered: dict[str, str] = {}
+    for key, value in headers.multi_items():
+        lower = key.lower()
+        if lower in RESPONSE_SKIP_HEADERS:
+            continue
+        filtered[lower] = value
+    return filtered
 
 
 async def forward(
