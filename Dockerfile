@@ -10,3 +10,5 @@ WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 COPY . .
+EXPOSE 8080
+CMD ["uvicorn", "stt_completions_combiner.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8080"]

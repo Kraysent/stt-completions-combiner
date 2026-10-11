@@ -1,0 +1,9 @@
+{
+  "model": "test-model",
+  "messages": [
+    {
+      "role": "user",
+      "content": "hello"
+    }
+  ]
+}

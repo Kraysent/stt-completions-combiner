@@ -1,0 +1,17 @@
+{
+  "model": "test-model",
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "input_audio",
+          "input_audio": {
+            "data": "AQID",
+            "format": "wav"
+          }
+        }
+      ]
+    }
+  ]
+}
