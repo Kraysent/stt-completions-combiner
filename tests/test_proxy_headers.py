@@ -1,6 +1,9 @@
 import httpx
+from fastapi.testclient import TestClient
 
 from stt_completions_combiner import proxy
+from stt_completions_combiner.config import Settings
+from stt_completions_combiner.main import create_app
 
 
 def test_filter_response_headers_strips_date_server_and_normalizes() -> None:
@@ -32,11 +35,6 @@ def test_filter_request_headers_normalizes_content_type() -> None:
 
 
 def test_chat_with_upstream_managed_headers() -> None:
-    from fastapi.testclient import TestClient
-
-    from stt_completions_combiner.config import Settings
-    from stt_completions_combiner.main import create_app
-
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(
             200,
